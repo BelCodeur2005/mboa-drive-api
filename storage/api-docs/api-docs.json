@@ -1,0 +1,1245 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mboa Drive API",
+        "description": "API pour l'application de covoiturage Mboa Drive - Cameroun",
+        "contact": {
+            "name": "Support Mboa Drive",
+            "email": "support@mboadrive.cm"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Serveur de développement"
+        },
+        {
+            "url": "https://api.mboadrive.cm",
+            "description": "Serveur de production"
+        }
+    ],
+    "paths": {
+        "/api/v1/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Inscription d'un nouvel utilisateur",
+                "description": "Créer un nouveau compte utilisateur avec les informations requises",
+                "operationId": "fb835c97347e657e2a627790c4c5817a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "phone",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jean Mballa"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jean@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "651234567"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8,
+                                        "example": "motdepasse123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "motdepasse123"
+                                    },
+                                    "user_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "passenger",
+                                            "driver",
+                                            "both"
+                                        ],
+                                        "example": "passenger"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Douala"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-15"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "male"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Inscription réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Inscription réussie"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|abcdef123456..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erreur de validation"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Connexion utilisateur",
+                "description": "Authentifier un utilisateur avec email/téléphone et mot de passe",
+                "operationId": "fb66b153966d9fac2e999136ef0ade67",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login": {
+                                        "description": "Email ou numéro de téléphone",
+                                        "type": "string",
+                                        "example": "jean@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "motdepasse123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Connexion réussie"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "2|fedcba654321..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Identifiants incorrects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erreur de validation"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Compte désactivé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Votre compte a été désactivé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Déconnexion utilisateur",
+                "description": "Supprimer le token d'authentification actuel",
+                "operationId": "307ed0512855922b2280792376bb2095",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Déconnexion réussie"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Profil utilisateur connecté",
+                "description": "Récupérer les informations de l'utilisateur connecté",
+                "operationId": "5389aaa95512ef0b6ec88f262ecee7f0",
+                "responses": {
+                    "200": {
+                        "description": "Informations utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/bookings": {
+            "post": {
+                "tags": [
+                    "Réservations"
+                ],
+                "summary": "Créer une réservation",
+                "description": "Réserver une ou plusieurs places sur un trajet existant (passagers uniquement)",
+                "operationId": "f6f5bf7dc5def23c323cebb98b5d1e5d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "trip_id",
+                                    "seats_booked"
+                                ],
+                                "properties": {
+                                    "trip_id": {
+                                        "description": "ID du trajet à réserver",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "seats_booked": {
+                                        "description": "Nombre de places à réserver",
+                                        "type": "integer",
+                                        "maximum": 8,
+                                        "minimum": 1,
+                                        "example": 2
+                                    },
+                                    "passenger_message": {
+                                        "description": "Message pour le conducteur",
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Bonjour, je serai à l'heure avec un petit bagage",
+                                        "nullable": true
+                                    },
+                                    "pickup_address": {
+                                        "description": "Adresse de prise en charge personnalisée",
+                                        "type": "string",
+                                        "example": "Devant la pharmacie du carrefour Deido",
+                                        "nullable": true
+                                    },
+                                    "pickup_latitude": {
+                                        "description": "Latitude du point de prise en charge",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 4.0614,
+                                        "nullable": true
+                                    },
+                                    "pickup_longitude": {
+                                        "description": "Longitude du point de prise en charge",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 9.7847,
+                                        "nullable": true
+                                    },
+                                    "dropoff_address": {
+                                        "description": "Adresse de dépose personnalisée",
+                                        "type": "string",
+                                        "example": "Université de Yaoundé I - Entrée principale",
+                                        "nullable": true
+                                    },
+                                    "dropoff_latitude": {
+                                        "description": "Latitude du point de dépose",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 3.8667,
+                                        "nullable": true
+                                    },
+                                    "dropoff_longitude": {
+                                        "description": "Longitude du point de dépose",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 11.5167,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Réservation créée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Réservation confirmée automatiquement"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookingResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès refusé - Seuls les passagers peuvent réserver",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Seuls les passagers peuvent effectuer des réservations"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreurs de logique métier",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "examples": {
+                                    "own_trip": {
+                                        "summary": "Propre trajet",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Vous ne pouvez pas réserver votre propre trajet"
+                                        }
+                                    },
+                                    "not_available": {
+                                        "summary": "Trajet non disponible",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Ce trajet n'est plus disponible pour réservation"
+                                        }
+                                    },
+                                    "not_enough_seats": {
+                                        "summary": "Pas assez de places",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Pas assez de places disponibles"
+                                        }
+                                    },
+                                    "already_booked": {
+                                        "summary": "Déjà réservé",
+                                        "value": {
+                                            "success": false,
+                                            "message": "Vous avez déjà une réservation en cours pour ce trajet"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/bookings/my-bookings": {
+            "get": {
+                "tags": [
+                    "Réservations"
+                ],
+                "summary": "Mes réservations",
+                "description": "Récupérer toutes les réservations du passager connecté avec options de filtrage",
+                "operationId": "ecf5e1e687b781595e27aacad3db13d3",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtrer par statut de réservation",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "confirmed",
+                                "cancelled",
+                                "completed",
+                                "no_show"
+                            ],
+                            "example": "confirmed"
+                        }
+                    },
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "description": "Filtrer par période temporelle",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "upcoming",
+                                "past",
+                                "today"
+                            ],
+                            "example": "upcoming"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des réservations du passager",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookingResource"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Jean Mballa"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "jean@example.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "651234567"
+                    },
+                    "profile_photo_url": {
+                        "type": "string",
+                        "example": "https://example.com/photo.jpg",
+                        "nullable": true
+                    },
+                    "user_type": {
+                        "type": "string",
+                        "enum": [
+                            "passenger",
+                            "driver",
+                            "both"
+                        ],
+                        "example": "passenger"
+                    },
+                    "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-15",
+                        "nullable": true
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male",
+                        "nullable": true
+                    },
+                    "bio": {
+                        "type": "string",
+                        "example": "Passager régulier",
+                        "nullable": true
+                    },
+                    "city": {
+                        "type": "string",
+                        "example": "Douala",
+                        "nullable": true
+                    },
+                    "is_verified": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "phone_verified": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "average_rating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5
+                    },
+                    "total_ratings": {
+                        "type": "integer",
+                        "example": 25
+                    },
+                    "emergency_contacts": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Marie Mballa"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "example": "677123456"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "preferences": {
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00Z"
+                    },
+                    "badges": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "verified"
+                                },
+                                "label": {
+                                    "type": "string",
+                                    "example": "Vérifié"
+                                },
+                                "icon": {
+                                    "type": "string",
+                                    "example": "verified"
+                                },
+                                "color": {
+                                    "type": "string",
+                                    "example": "blue"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TripResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "driver": {
+                        "$ref": "#/components/schemas/UserResource"
+                    },
+                    "vehicle": {
+                        "$ref": "#/components/schemas/VehicleResource"
+                    },
+                    "departure": {
+                        "properties": {
+                            "city": {
+                                "type": "string",
+                                "example": "Douala"
+                            },
+                            "address": {
+                                "type": "string",
+                                "example": "Rond-point Deido"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 4.0614,
+                                "nullable": true
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 9.7847,
+                                "nullable": true
+                            },
+                            "date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-20T08:00:00Z"
+                            },
+                            "formatted_date": {
+                                "type": "string",
+                                "example": "20/01/2024 08:00"
+                            },
+                            "formatted_time": {
+                                "type": "string",
+                                "example": "08:00"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "arrival": {
+                        "properties": {
+                            "city": {
+                                "type": "string",
+                                "example": "Yaoundé"
+                            },
+                            "address": {
+                                "type": "string",
+                                "example": "Gare routière Mvan"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 3.8667,
+                                "nullable": true
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 11.5167,
+                                "nullable": true
+                            },
+                            "date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-01-20T11:30:00Z"
+                            },
+                            "formatted_date": {
+                                "type": "string",
+                                "example": "20/01/2024 11:30"
+                            },
+                            "formatted_time": {
+                                "type": "string",
+                                "example": "11:30"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "seats": {
+                        "properties": {
+                            "total": {
+                                "type": "integer",
+                                "example": 4
+                            },
+                            "available": {
+                                "type": "integer",
+                                "example": 3
+                            },
+                            "booked": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "remaining": {
+                                "type": "integer",
+                                "example": 2
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "price_per_seat": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 5000
+                    },
+                    "formatted_price": {
+                        "type": "string",
+                        "example": "5 000 FCFA"
+                    },
+                    "total_distance": {
+                        "type": "integer",
+                        "example": 245,
+                        "nullable": true
+                    },
+                    "estimated_duration": {
+                        "type": "integer",
+                        "example": 210,
+                        "nullable": true
+                    },
+                    "preferences": {
+                        "properties": {
+                            "instant_booking": {
+                                "type": "boolean",
+                                "example": true
+                            },
+                            "smoking_allowed": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "pets_allowed": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "max_2_in_back": {
+                                "type": "integer",
+                                "example": 2
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "scheduled",
+                            "in_progress",
+                            "completed",
+                            "cancelled"
+                        ],
+                        "example": "scheduled"
+                    },
+                    "is_full": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "can_be_booked": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_upcoming": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "additional_info": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "VehicleResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand": {
+                        "type": "string",
+                        "example": "Toyota"
+                    },
+                    "model": {
+                        "type": "string",
+                        "example": "Corolla"
+                    },
+                    "color": {
+                        "type": "string",
+                        "example": "Blanc"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "example": 2018
+                    },
+                    "license_plate": {
+                        "type": "string",
+                        "example": "LT 123 AA"
+                    },
+                    "fuel_type": {
+                        "type": "string",
+                        "enum": [
+                            "gasoline",
+                            "diesel",
+                            "hybrid",
+                            "electric"
+                        ],
+                        "example": "gasoline"
+                    },
+                    "seats": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "available_seats": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "air_conditioning": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_verified": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "full_name": {
+                        "type": "string",
+                        "example": "Toyota Corolla 2018"
+                    },
+                    "main_photo": {
+                        "type": "string",
+                        "example": "https://example.com/vehicle.jpg",
+                        "nullable": true
+                    },
+                    "photos": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "badges": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "type": {
+                                    "type": "string"
+                                },
+                                "label": {
+                                    "type": "string"
+                                },
+                                "icon": {
+                                    "type": "string"
+                                },
+                                "color": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "BookingResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "trip": {
+                        "$ref": "#/components/schemas/TripResource"
+                    },
+                    "passenger": {
+                        "$ref": "#/components/schemas/UserResource"
+                    },
+                    "seats_booked": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 10000
+                    },
+                    "formatted_amount": {
+                        "type": "string",
+                        "example": "10 000 FCFA"
+                    },
+                    "passenger_message": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "pickup": {
+                        "properties": {
+                            "address": {
+                                "type": "string"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "dropoff": {
+                        "properties": {
+                            "address": {
+                                "type": "string"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "cancelled",
+                            "completed",
+                            "no_show"
+                        ],
+                        "example": "pending"
+                    },
+                    "status_label": {
+                        "type": "string",
+                        "example": "En attente de confirmation"
+                    },
+                    "can_be_cancelled": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_picked_up": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "is_dropped_off": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "payment_status": {
+                        "type": "string",
+                        "enum": [
+                            "unpaid",
+                            "pending",
+                            "paid"
+                        ],
+                        "example": "unpaid"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Une erreur s'est produite"
+                    },
+                    "error": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "SuccessResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Opération réussie"
+                    },
+                    "data": {
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "pagination": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 5
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 48
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Entrez le token Bearer obtenu lors de la connexion"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentification",
+            "description": "Endpoints pour l'authentification des utilisateurs"
+        },
+        {
+            "name": "Réservations",
+            "description": "Gestion des réservations de trajets"
+        }
+    ]
+}
