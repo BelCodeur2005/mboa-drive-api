@@ -1,66 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mboa Drive API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST d'une application de covoiturage pour le Cameroun : les conducteurs publient des trajets entre villes (Douala, Yaoundé, Bafoussam…), les passagers réservent une place, paient et notent le trajet.
 
-## About Laravel
+Ce dépôt contient le backend. Il est conçu pour être consommé par une application mobile.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fonctionnalités
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Authentification** par jeton (Laravel Sanctum) : inscription, connexion, vérification du téléphone par OTP, réinitialisation du mot de passe
+- **Véhicules** : ajout, photos, activation
+- **Trajets** : publication, étapes intermédiaires, recherche, démarrage, fin, annulation, historique
+- **Réservations** : demande, confirmation ou refus par le conducteur, prise en charge et dépose du passager
+- **Paiements** : Mobile Money (MTN, Orange) ou espèces, historique et statut
+- **Messagerie** entre conducteur et passager, avec compteur de messages non lus
+- **Notes et avis** sur les conducteurs et les passagers
+- **Notifications push** via Firebase Cloud Messaging
+- **Tableaux de bord** conducteur et passager (statistiques, trajets, réservations)
+- **Support** : signalement d'un utilisateur, retours
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack technique
 
-## Learning Laravel
+| Couche | Technologie |
+|---|---|
+| Framework | Laravel 10 (PHP 8.1+) |
+| Authentification | Laravel Sanctum |
+| Rôles et permissions | spatie/laravel-permission |
+| Cache et files d'attente | Redis (Predis) |
+| Temps réel | Pusher |
+| Notifications push | Firebase Cloud Messaging (kreait/firebase-php) |
+| Stockage des images | AWS S3, Intervention Image |
+| Documentation de l'API | Swagger / OpenAPI (L5-Swagger) |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Prérequis : PHP 8.1+, Composer, MySQL ou PostgreSQL, Redis.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone https://github.com/BelCodeur2005/mboa-drive-api.git
+cd mboa-drive-api
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+Renseigner la base de données dans `.env`, puis :
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+php artisan migrate
+php artisan serve
+```
 
-### Premium Partners
+L'API répond sur `http://localhost:8000/api/v1`.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Documentation de l'API
 
-## Contributing
+La documentation Swagger est disponible sur `http://localhost:8000/api/documentation` une fois le serveur lancé.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Principaux groupes de routes (`/api/v1`) :
 
-## Code of Conduct
+| Préfixe | Rôle |
+|---|---|
+| `/auth` | inscription, connexion, OTP, profil connecté |
+| `/trips` | recherche (public) et gestion des trajets |
+| `/bookings` | réservations côté passager et côté conducteur |
+| `/vehicles` | véhicules du conducteur |
+| `/payments` | paiement Mobile Money ou espèces |
+| `/messages` | conversations |
+| `/ratings` | notes et avis |
+| `/notifications` | notifications de l'utilisateur |
+| `/dashboard` | statistiques conducteur et passager |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## État du projet
 
-## Security Vulnerabilities
+Le projet est en cours de développement :
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- le paiement Mobile Money (MTN, Orange) et l'envoi d'OTP par SMS sont **simulés**, l'intégration des API réelles est prévue
+- les tests automatisés ne sont pas encore écrits
